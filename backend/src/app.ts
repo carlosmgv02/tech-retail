@@ -1,19 +1,22 @@
-import express, { type Request, type Response } from 'express'
-import { query } from './database' // Asegúrate de ajustar la ruta de importación según tu estructura
+// src/app.ts
 
-const app = express()
-const port = 3000
+import express from "express";
+import { UserController } from "./controllers/userController";
+import { verifyToken } from "./middleware/authMiddleware";
+import userRoutes from "./routes/userRoutes";
+const app = express();
+const port = 3002;
+const userController = new UserController();
+app.use(express.json());
 
-app.get('/test-db', async (req: Request, res: Response) => {
-  try {
-    const result = await query('SELECT NOW()')
-    res.json({ currentTime: result.rows[0].now })
-  } catch (error: any) {
-    console.error(error)
-    res.status(500).json({ error: error.message })
-  }
-})
+app.post("/register", userController.registerUser);
+app.post("/login", userController.loginUser);
+app.use("/users", userRoutes);
+// Ejemplo de ruta protegida
+app.get("/protected", verifyToken, (req, res) => {
+  res.send("This is a protected route");
+});
 
 app.listen(port, () => {
-  console.log(`Servidor ejecutándose en http://localhost:${port}`)
-})
+  console.log(`Server running on http://localhost:${port}`);
+});

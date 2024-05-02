@@ -13,12 +13,16 @@
     "noImplicitThis": true,
     "strictNullChecks": true,
     "strict": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "strictPropertyInitialization": false,
     "paths": {
       "@/*": [
         "./*"
       ]
     }
   },
+  "include": ["src/**/*"],
   "exclude": [
     "node_modules",
     "dist"

@@ -1,0 +1,10 @@
+.wrapper {
+    margin: 40px;
+}
+
+.styledButton {
+    position: fixed;
+    z-index: 100;
+    right: 20px;
+    top: 20px;
+}
