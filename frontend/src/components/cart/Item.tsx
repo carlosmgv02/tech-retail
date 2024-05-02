@@ -12,9 +12,9 @@ type Props = {
 
 const Item: React.FC<Props> = ({ item, handleAddToCart }) => (
     <div className={styles.wrapper}>
-        <img src={item.image} alt={item.title} className={styles.img} />
+        <img src={item.imageUrl} alt={item.name} className={styles.img} />
         <div className={styles.content}>
-            <h3>{item.title}</h3>
+            <h3>{item.name}</h3>
             <p>{item.description}</p>
             <h3>${item.price}</h3>
         </div>

@@ -13,7 +13,7 @@ type Props = {
 
 const Cart: React.FC<Props> = ({ cartItems, addToCart, removeFromCart }) => {
     const calculateTotal = (items: CartItemType[]) =>
-        items.reduce((ack: number, item) => ack + item.amount * item.price, 0);
+        items.reduce((ack: number, item) => ack + item.stock * item.price, 0);
 
     return (
         <div className={styles.container}> {/* Use styles.wrapper instead of <Wrapper> */}
