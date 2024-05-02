@@ -14,6 +14,27 @@ export class UserController extends GenericController<User> {
   constructor() {
     super(User);
   }
+  validateToken = async (req: Request, res: Response) => {
+    const bearerHeader = req.headers["authorization"];
+    if (!bearerHeader) {
+      return res.status(403).json({ message: "No token provided" });
+    }
+    try {
+      const token = bearerHeader.split(" ")[1];
+      jwt.verify(token, SECRET_KEY);
+      res.json({ message: "Token is valid" });
+    } catch (error) {
+      if (error instanceof Error) {
+        res
+          .status(401)
+          .json({ message: "Invalid token", error: error.message });
+      } else {
+        res
+          .status(401)
+          .json({ message: "Invalid token", error: "Unknown error" });
+      }
+    }
+  };
   registerUser = async (req: Request, res: Response) => {
     try {
       const { username, password, email } = req.body;
@@ -58,7 +79,7 @@ export class UserController extends GenericController<User> {
         return res.status(401).json({ message: "Invalid password" });
       }
 
-      const token = jwt.sign({ id: user.id }, SECRET_KEY, { expiresIn: 86400 }); // 24 horas
+      const token = jwt.sign({ id: user.id }, SECRET_KEY, { expiresIn: 86400 });
       res.json({ token });
     } catch (error) {
       // Utilizar este fragmento donde manejes errores (como en los controladores)

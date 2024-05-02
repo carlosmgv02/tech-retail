@@ -18,13 +18,13 @@ const Register = () => {
   const [password, setPassword] = useState("");
 
   const handleRegister = async () => {
-    const response = await fetch('http://localhost:3002/register', { // Replace {{baseUrl}} with your actual backend URL
+    const response = await fetch('http://localhost:3002/auth/register', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            username: name, // Adjusted to send "name" as "username"
+            username: name,
             email: email,
             password: password,
         })
@@ -32,10 +32,8 @@ const Register = () => {
     const data = await response.json();
     if (response.ok) {
         console.log('Registration successful', data);
-        // Handle successful registration, e.g., redirect to login page
     } else {
         console.log('Registration failed', data);
-        // Handle errors, e.g., display error message to the user
     }
 };
 

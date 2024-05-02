@@ -11,31 +11,34 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import Cookies from 'js-cookie'; // First, install js-cookie with npm or yarn
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate()
 
   const handleLogin = async () => {
-    const response = await fetch('http://localhost:3002/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            username: email, // assuming username is the email for simplicity
-            password: password,
-        })
-    });
-    const data = await response.json();
-    if (response.ok) {
-        console.log('Login successful', data);
-        // Handle successful login, e.g., store JWT, navigate to dashboard, etc.
-    } else {
-        console.log('Login failed', data);
-        // Handle errors, e.g., show error message to the user
-    }
-};
+      const response = await fetch('http://localhost:3002/auth/login', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+              username: username,
+              password: password,
+          })
+      });
+      const data = await response.json();
+      if (response.ok) {
+          Cookies.set('token', data.token, { expires: 1 }); // Store token in cookies, expires in 1 day
+          navigate('/'); // Redirect to home or other protected page
+      } else {
+          console.log('Login failed');
+          // Optionally handle login failure, e.g., show an error message
+      }
+  };
 
 
   return (
@@ -59,12 +62,12 @@ const Login = () => {
               margin="normal"
               required
               fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
+              id="username"
+              label="Username"
+              name="username"
               autoFocus
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
             />
 
             <TextField
