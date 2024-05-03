@@ -13,6 +13,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import Cookies from 'js-cookie'; // First, install js-cookie with npm or yarn
 import { useNavigate } from 'react-router-dom';
+import { login } from "../services/authService";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -20,23 +21,15 @@ const Login = () => {
   const navigate = useNavigate()
 
   const handleLogin = async () => {
-      const response = await fetch('http://localhost:3002/auth/login', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-              username: username,
-              password: password,
-          })
-      });
-      const data = await response.json();
-      if (response.ok) {
-          Cookies.set('token', data.token, { expires: 1 }); // Store token in cookies, expires in 1 day
-          navigate('/'); // Redirect to home or other protected page
-      } else {
-          console.log('Login failed');
-          // Optionally handle login failure, e.g., show an error message
+      try {
+        const response = await login(username, password);
+        if(response.token)
+        Cookies.set('token', response.token, { expires: 1 });
+        if(response.email)
+        Cookies.set('email', response.email, { expires: 1 });
+        navigate('/');
+      } catch {
+        console.log('Login failed');
       }
   };
 

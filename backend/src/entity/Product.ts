@@ -21,4 +21,7 @@ export class Product extends BaseEntity {
 
   @Column("int")
   stock: number;
+
+  @Column()
+  stripePriceId: string;
 }

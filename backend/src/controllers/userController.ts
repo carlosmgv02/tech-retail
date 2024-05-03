@@ -10,6 +10,7 @@ import jwt from "jsonwebtoken";
 import { GenericController } from "./genericController";
 
 const SECRET_KEY = process.env.JWT_SECRET || "snfuysbftysfctres";
+
 export class UserController extends GenericController<User> {
   constructor() {
     super(User);
@@ -73,14 +74,13 @@ export class UserController extends GenericController<User> {
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
-
       const passwordIsValid = bcrypt.compareSync(password, user.password);
       if (!passwordIsValid) {
         return res.status(401).json({ message: "Invalid password" });
       }
 
       const token = jwt.sign({ id: user.id }, SECRET_KEY, { expiresIn: 86400 });
-      res.json({ token });
+      res.json({ token, email: user.email });
     } catch (error) {
       // Utilizar este fragmento donde manejes errores (como en los controladores)
 

@@ -10,30 +10,22 @@ import {
 } from "@mui/material";
 import { LockOutlined } from "@mui/icons-material";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { register } from "../services/authService";
 
 const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const navigate = useNavigate()
+
   const handleRegister = async () => {
-    const response = await fetch('http://localhost:3002/auth/register', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            username: name,
-            email: email,
-            password: password,
-        })
-    });
-    const data = await response.json();
-    if (response.ok) {
-        console.log('Registration successful', data);
-    } else {
-        console.log('Registration failed', data);
+    try{
+      await register(name, email, password);
+      navigate("/login") 
+    } catch {
+      console.log('Register failed');
     }
 };
 

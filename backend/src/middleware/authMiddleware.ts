@@ -1,4 +1,5 @@
 // src/middleware/authMiddleware.ts
+import "dotenv/config";
 
 import { Request, Response, NextFunction } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
@@ -10,22 +11,31 @@ export const verifyToken = (
   res: Response,
   next: NextFunction
 ) => {
-  let token = req.headers["authorization"];
+  const token = req.headers.authorization;
+
   if (!token) {
     return res.status(403).json({ message: "No token provided!" });
   }
 
-  token = token.startsWith("Bearer ") ? token.slice(7, token.length) : token;
+  if (!token.startsWith("Bearer ")) {
+    return res.status(401).json({ message: "Invalid token format!" });
+  }
+
+  const actualToken = token.slice(7);
 
   try {
-    const decoded = jwt.verify(token, SECRET_KEY) as JwtPayload;
-    if (typeof decoded !== "string" && decoded.id) {
-      req.body.userId = decoded.id;
-      next();
-    } else {
-      return res.status(401).json({ message: "Unauthorized!" });
-    }
+    const decoded = jwt.verify(actualToken, SECRET_KEY) as JwtPayload;
+    req.body.userId = decoded.id;
+    next();
   } catch (error) {
-    return res.status(401).json({ message: "Unauthorized!" });
+    if (error instanceof Error) {
+      return res
+        .status(401)
+        .json({ message: "Invalid token!", error: error.message });
+    } else {
+      return res
+        .status(401)
+        .json({ message: "Invalid token!", error: "Unknown error" });
+    }
   }
 };

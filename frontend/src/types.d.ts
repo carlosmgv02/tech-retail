@@ -6,4 +6,6 @@ export interface CartItemType {
   price: number;
   name: string;
   stock: number;
+  amount: number;
+  stripePriceId: string;
 }

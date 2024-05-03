@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from 'react-query';
 import styles from './Home.module.css'
+import {getProducts} from '../../services/productService'
 
 //components
 import { Drawer } from '@mui/material';
@@ -23,10 +24,10 @@ export type CartItemType = {
     price: number;
     name: string;
     stock: number;
+    amount: number;
+    stripePriceId: string;
 };
 
-const getProducts = async (): Promise<CartItemType[]> =>
-    await (await fetch('http://localhost:3002/products')).json();
 
 const App = () => {
     const [cartOpen, setCartOpen] = useState(false);
@@ -38,7 +39,7 @@ const App = () => {
     );
 
     const getTotalItems = (items: CartItemType[]) =>
-        items.reduce((ack: number, item) => ack + item.stock, 0);
+        items.reduce((ack: number, item) => ack + item.amount, 0);
 
     const handleAddToCart = (clickedItem: CartItemType) => {
         setCartItems((previousItems) => {
@@ -50,7 +51,7 @@ const App = () => {
             if (isItemInCart) {
                 return previousItems.map((item) =>
                     item.id === clickedItem.id
-                        ? { ...item, amount: item.stock + 1 }
+                        ? { ...item, amount: item.amount + 1 }
                         : item
                 );
             }
@@ -64,8 +65,8 @@ const App = () => {
         setCartItems((previousItems) =>
             previousItems.reduce((ack, item) => {
                 if (item.id === id) {
-                    if (item.stock === 1) return ack;
-                    return [...ack, { ...item, amount: item.stock - 1 }];
+                    if (item.amount === 1) return ack;
+                    return [...ack, { ...item, amount: item.amount - 1 }];
                 } else {
                     return [...ack, item];
                 }
