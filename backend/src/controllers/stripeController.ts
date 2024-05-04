@@ -1,9 +1,10 @@
 import "dotenv/config";
 import Stripe from "stripe";
 import { Request, Response } from "express";
+import { handleError, handleErrorMessage } from "../utils/errorHandler";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
-
+const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 export class StripeController {
   createCheckoutSession = async (req: Request, res: Response) => {
     const { line_items, customer_email } = req.body;
@@ -13,8 +14,8 @@ export class StripeController {
         payment_method_types: ["card"],
         line_items,
         mode: "payment",
-        success_url: `http://localhost:3001`,
-        cancel_url: `http://localhost:3001`,
+        success_url: `http://localhost:3001/success`,
+        cancel_url: `http://localhost:3001/failed`,
         customer_email,
       });
       if (session.url) {
@@ -25,14 +26,39 @@ export class StripeController {
         res.status(500).json({ message: "Failed to create checkout session" });
       }
     } catch (error) {
-      if (error instanceof Error) {
-        console.log(error.message);
+      handleError(error, res);
+    }
+  };
+  handleWebhook = (req: Request, res: Response) => {
+    const sig: string | string[] = req.headers["stripe-signature"] || "";
+    try {
+      // Directly use req.body which should be a Buffer due to express.raw middleware
+      const event = stripe.webhooks.constructEvent(
+        req.body, // Ensure this is a Buffer or a string
+        sig,
+        endpointSecret || ""
+      );
 
-        res.status(500).json({ message: "Server error", error: error.message });
-      } else {
-        res
-          .status(500)
-          .json({ message: "Server error", error: "Unknown error" });
+      console.log("Event:", event.type);
+
+      // Handle the event
+      switch (event.type) {
+        case "payment_intent.succeeded":
+          const paymentIntent = event.data.object;
+          console.log("PaymentIntent was successful!");
+          break;
+        default:
+          console.log(`Unhandled event type ${event.type}`);
+      }
+
+      res.status(200).json({ received: true });
+    } catch (err) {
+      if (err instanceof Error) {
+        handleErrorMessage(
+          "Error in webhook handling: " + err.message,
+          400,
+          res
+        );
       }
     }
   };

@@ -8,6 +8,7 @@ import { User } from "../entity/User";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { GenericController } from "./genericController";
+import { handleError, handleErrorMessage } from "../utils/errorHandler";
 
 const SECRET_KEY = process.env.JWT_SECRET || "snfuysbftysfctres";
 
@@ -26,13 +27,9 @@ export class UserController extends GenericController<User> {
       res.json({ message: "Token is valid" });
     } catch (error) {
       if (error instanceof Error) {
-        res
-          .status(401)
-          .json({ message: "Invalid token", error: error.message });
+        handleErrorMessage(error.message, 401, res);
       } else {
-        res
-          .status(401)
-          .json({ message: "Invalid token", error: "Unknown error" });
+        handleErrorMessage("Invalid token", 401, res);
       }
     }
   };
@@ -55,13 +52,7 @@ export class UserController extends GenericController<User> {
       await userRepository.save(user);
       res.status(201).json({ message: "User registered successfully" });
     } catch (error) {
-      if (error instanceof Error) {
-        res.status(500).json({ message: "Server error", error: error.message });
-      } else {
-        res
-          .status(500)
-          .json({ message: "Server error", error: "Unknown error" });
-      }
+      handleError(error, res);
     }
   };
 
@@ -83,14 +74,7 @@ export class UserController extends GenericController<User> {
       res.json({ token, email: user.email });
     } catch (error) {
       // Utilizar este fragmento donde manejes errores (como en los controladores)
-
-      if (error instanceof Error) {
-        res.status(500).json({ message: "Server error", error: error.message });
-      } else {
-        res
-          .status(500)
-          .json({ message: "Server error", error: "Unknown error" });
-      }
+      handleError(error, res);
     }
   };
 }
