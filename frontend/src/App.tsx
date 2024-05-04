@@ -8,12 +8,13 @@ import ProductOverview from './components/cart/ProductOverview'
 import CheckoutSuccess from './components/checkout/CheckoutSuccess';
 import CheckoutFailed from './components/checkout/CheckoutFailed';
 import NavBar from './components/Navbar';
-
+import ShoppingHistory from './components/cart/ShoppingHistory';
 function App() {
   const AuthenticatedHome = withAuth(Home);
   const AuthenticatedProductOverview = withAuth(ProductOverview)
   const AuthenticatedCheckoutSuccess = withAuth(CheckoutSuccess)
   const AuthenticatedCheckoutFailed = withAuth(CheckoutFailed)
+  const AuthenticatedShoppingHistory = withAuth(ShoppingHistory)
 
   return (
     <Router>
@@ -25,7 +26,7 @@ function App() {
         <Route path="/success" element={<AuthenticatedCheckoutSuccess />} />
         <Route path="/failed" element={<AuthenticatedCheckoutFailed />} />
         <Route path="/item/:id" element={<AuthenticatedProductOverview />} />
-
+        <Route path="/history" element={<AuthenticatedShoppingHistory />} />
       </Routes>
     </Router>
   );

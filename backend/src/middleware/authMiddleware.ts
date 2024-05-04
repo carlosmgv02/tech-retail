@@ -25,7 +25,7 @@ export const verifyToken = (
 
   try {
     const decoded = jwt.verify(actualToken, SECRET_KEY) as JwtPayload;
-    req.body.userId = decoded.id;
+
     next();
   } catch (error) {
     if (error instanceof Error) {

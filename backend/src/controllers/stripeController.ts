@@ -19,8 +19,8 @@ export class StripeController {
         payment_method_types: ["card"],
         line_items,
         mode: "payment",
-        success_url: `http://localhost:3001/success`,
-        cancel_url: `http://localhost:3001/failed`,
+        success_url: "http://localhost:3001/success",
+        cancel_url: "http://localhost:3001/failed",
         customer_email,
       });
       if (session.url) {
@@ -73,7 +73,6 @@ export class StripeController {
       handleError(err, res);
     }
   };
-
   private async createPurchaseRecord(
     lineItems: Stripe.ApiList<any>,
     customerId: string

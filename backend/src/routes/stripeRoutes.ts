@@ -16,5 +16,4 @@ router.post(
   express.raw({ type: "application/json" }),
   stripeController.handleWebhook
 );
-
 export default router;

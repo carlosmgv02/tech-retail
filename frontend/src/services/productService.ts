@@ -1,6 +1,6 @@
 import authHeader from "../config/authHeaderService";
 import api from "../config/axios";
-import type { CartItemType } from "../types";
+import type { CartItemType, Purchase } from "../types";
 
 export const getProducts = async (): Promise<CartItemType[]> => {
   const products = await api.get("/products", { headers: authHeader() });
@@ -28,6 +28,13 @@ export const createCheckoutSession = async (
       headers: authHeader(),
     }
   );
+  return response.data;
+};
+
+export const fetchPurchases = async () => {
+  const response = await api.get<Purchase[]>("/purchases", {
+    headers: authHeader(),
+  });
   return response.data;
 };
 
