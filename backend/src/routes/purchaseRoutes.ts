@@ -6,5 +6,9 @@ const router = Router();
 const purchaseController = new PurchaseController();
 
 router.get("", purchaseController.getAll.bind(purchaseController));
+router.get(
+  "/:purchaseId/pdf",
+  purchaseController.generatePdf.bind(purchaseController)
+);
 
 export default router;

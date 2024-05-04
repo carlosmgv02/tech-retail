@@ -22,7 +22,6 @@ app.use(
 app.use("/auth", express.json(), authRoutes);
 
 // Apply middleware for parsing JSON only to specific routes where necessary
-app.use("/users", express.json(), userRoutes);
 app.use("/products", express.json(), productRoutes);
 
 // Stripe routes setup
@@ -30,6 +29,7 @@ app.use("/stripe", stripeRoutes);
 
 // Apply the verifyToken middleware to all subsequent routes
 app.use(verifyToken);
+app.use("/users", express.json(), userRoutes);
 app.use("/purchases", express.json(), purchaseRoutes);
 // Example of a protected route
 app.get("/protected", (req, res) => {

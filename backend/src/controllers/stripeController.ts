@@ -7,9 +7,12 @@ import { AppDataSource } from "../database";
 import { User } from "../entity/User";
 import { Product } from "../entity/Product";
 import { PurchaseItem } from "../entity/PurchaseItem";
-
+import { ProductController } from "./productController";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+const productController = new ProductController();
+
 export class StripeController {
   createCheckoutSession = async (req: Request, res: Response) => {
     const { line_items, customer_email } = req.body;
@@ -64,7 +67,6 @@ export class StripeController {
           break;
 
         default:
-          console.log(`Unhandled event type ${event.type}`);
           break;
       }
 
@@ -77,6 +79,7 @@ export class StripeController {
     lineItems: Stripe.ApiList<any>,
     customerId: string
   ) {
+    await productController.handlePurchaseTransaction(lineItems);
     const purchase = new Purchase();
     purchase.total = lineItems.data.reduce(
       (sum, item) => sum + (item.price.unit_amount * item.quantity) / 100,
