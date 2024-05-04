@@ -10,6 +10,8 @@ import Grid from '@mui/material/Grid';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import Badge from '@mui/material/Badge';
 import Button from '@mui/material/Button'
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 
 //Styles
 import Item from './Item';
@@ -32,11 +34,14 @@ export type CartItemType = {
 const App = () => {
     const [cartOpen, setCartOpen] = useState(false);
     const [cartItems, setCartItems] = useState([] as CartItemType[]);
+    const [category, setCategory] = useState('all');
 
     const { data, isLoading, error } = useQuery<CartItemType[]>(
         'products',
         getProducts
     );
+
+    const categories = ['all', ...new Set(data?.map(item => item.category))];
 
     const getTotalItems = (items: CartItemType[]) =>
         items.reduce((ack: number, item) => ack + item.amount, 0);
@@ -95,8 +100,18 @@ const App = () => {
                     <AddShoppingCartIcon />
                 </Badge>
             </Button>
+            <Select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                displayEmpty
+                className={styles.categorySelector}
+            >
+                {categories.map((category, index) => (
+                    <MenuItem key={index} value={category}>{category}</MenuItem>
+                ))}
+            </Select>
             <Grid container spacing={3}>
-                {data?.map((item) => (
+                {data?.filter(item => category === 'all' || item.category === category).map((item) => (
                     <Grid item key={item.id} xs={12} sm={4}>
                         <Item item={item} handleAddToCart={handleAddToCart} />
                     </Grid>

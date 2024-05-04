@@ -7,6 +7,7 @@ import withAuth from './components/withAuth';
 import ProductOverview from './components/cart/ProductOverview'
 import CheckoutSuccess from './components/checkout/CheckoutSuccess';
 import CheckoutFailed from './components/checkout/CheckoutFailed';
+import NavBar from './components/Navbar';
 
 function App() {
   const AuthenticatedHome = withAuth(Home);
@@ -16,6 +17,7 @@ function App() {
 
   return (
     <Router>
+      <NavBar />
       <Routes>
         <Route path="/" element={<AuthenticatedHome />} />
         <Route path="/login" element={<Login />} />

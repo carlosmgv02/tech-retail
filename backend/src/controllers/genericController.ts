@@ -13,7 +13,14 @@ export abstract class GenericController<T extends BaseEntity> {
 
   async getAll(req: Request, res: Response) {
     try {
-      const entities = await this.repository.find();
+      // Accept a query parameter to specify relations, e.g., ?relations=category,owner
+      const relations = req.query.relations
+        ? (req.query.relations as string).split(",")
+        : [];
+
+      const entities = await this.repository.find({
+        relations: relations,
+      });
       res.json(entities);
     } catch (error) {
       console.error(error);

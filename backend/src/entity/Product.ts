@@ -1,6 +1,14 @@
-// src/entity/Product.ts
-
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  BaseEntity,
+  OneToMany,
+  ManyToOne,
+  JoinColumn,
+} from "typeorm";
+import { PurchaseItem } from "./PurchaseItem";
+import { Category } from "./Category";
 
 @Entity()
 export class Product extends BaseEntity {
@@ -24,4 +32,11 @@ export class Product extends BaseEntity {
 
   @Column()
   stripePriceId: string;
+
+  @OneToMany(() => PurchaseItem, (purchaseItem) => purchaseItem.product)
+  purchaseItems: PurchaseItem[];
+
+  @ManyToOne(() => Category, (category) => category.products)
+  @JoinColumn({ name: "category_id" })
+  category: Category;
 }

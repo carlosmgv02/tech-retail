@@ -1,16 +1,16 @@
-// src/entity/User.ts
-
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   Unique,
   BaseEntity,
+  OneToMany,
 } from "typeorm";
 import bcrypt from "bcryptjs";
+import { Purchase } from "./Purchase";
 
 @Entity()
-@Unique("UQ_USERNAME", ["username"]) // Nombre único y campos únicos
+@Unique("UQ_USERNAME", ["username"]) // Ensure username is unique
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -23,6 +23,9 @@ export class User extends BaseEntity {
 
   @Column()
   email: string;
+
+  @OneToMany(() => Purchase, (purchase) => purchase.user)
+  purchases: Purchase[];
 
   hashPassword(): void {
     this.password = bcrypt.hashSync(this.password, 8);
