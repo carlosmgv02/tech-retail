@@ -4,12 +4,12 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 10px;
   height: 100vh;
   background-color: #fff0f0;
 }
 
 .button {
-  margin-top: 20px;
   background-color: #ff1744;
   color: #fff;
 }

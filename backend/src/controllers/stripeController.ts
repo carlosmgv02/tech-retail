@@ -8,12 +8,18 @@ import { User } from "../entity/User";
 import { Product } from "../entity/Product";
 import { PurchaseItem } from "../entity/PurchaseItem";
 import { ProductController } from "./productController";
+import { EmailService } from "../service/emailService";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 const productController = new ProductController();
 
 export class StripeController {
+  private stripe: Stripe;
+  private emailService: EmailService;
+  constructor() {
+    this.emailService = new EmailService();
+  }
   createCheckoutSession = async (req: Request, res: Response) => {
     const { line_items, customer_email } = req.body;
 
@@ -22,8 +28,8 @@ export class StripeController {
         payment_method_types: ["card"],
         line_items,
         mode: "payment",
-        success_url: "http://localhost:3001/success",
-        cancel_url: "http://localhost:3001/failed",
+        success_url: process.env.SUCCESS_URL || "http://localhost:3000/success",
+        cancel_url: process.env.CANCEL_URL || "http://localhost:3000/failed",
         customer_email,
       });
       if (session.url) {
@@ -109,6 +115,7 @@ export class StripeController {
     }
 
     await AppDataSource.getRepository(Purchase).save(purchase);
+    await this.emailService.sendPurchaseConfirmation(user.email, purchase);
     console.log(`Purchase record created for user ${purchase.user.id}`);
   }
 }

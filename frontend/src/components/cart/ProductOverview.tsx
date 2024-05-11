@@ -47,7 +47,7 @@ const ProductOverview = () => {
       <div className={styles.details}>
         <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
           <h1 className={styles.title}>{product.name}</h1>
-          <h2 className={styles.price}>${product.price}</h2>
+          <h2 className={styles.price}>€{product.price}</h2>
         </div>
         <div className={styles.colors}>
           Colors:

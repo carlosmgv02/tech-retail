@@ -4,6 +4,7 @@ import type { CartItemType, Purchase } from "../types";
 
 export const getProducts = async (): Promise<CartItemType[]> => {
   const products = await api.get("/products", { headers: authHeader() });
+
   return products.data;
 };
 

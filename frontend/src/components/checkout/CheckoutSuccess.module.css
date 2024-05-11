@@ -8,6 +8,10 @@
   background-color: #f4f4f4;
 }
 
-.button {
+.buttonContainer {
   margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
 }
