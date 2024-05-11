@@ -17,6 +17,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Item from "./Item";
 import CartItem from "./CartItem";
 import Cart from "./Cart";
+import { useCart } from "../../context/CartContext";
 
 export type CartItemType = {
   id: number;
@@ -34,10 +35,7 @@ const App = () => {
   const [cartOpen, setCartOpen] = useState(false);
   const [category, setCategory] = useState("all");
   const [products, setProducts] = useState<CartItemType[]>([]);
-  const [cartItems, setCartItems] = useState<CartItemType[]>(() => {
-    const savedCartItems = localStorage.getItem("cartItems");
-    return savedCartItems ? JSON.parse(savedCartItems) : [];
-  });
+  const { cartItems, getTotalItems } = useCart();
 
   useEffect(() => {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
@@ -55,40 +53,6 @@ const App = () => {
   }, [data]);
 
   const categories = ["all", ...new Set(data?.map((item) => item.category))];
-
-  const getTotalItems = (items: CartItemType[]) =>
-    items.reduce((ack: number, item) => ack + item.amount, 0);
-
-  const handleAddToCart = (clickedItem: CartItemType) => {
-    setCartItems((previousItems) => {
-      const isItemInCart = previousItems.find(
-        (item) => item.id === clickedItem.id
-      );
-
-      if (isItemInCart) {
-        return previousItems.map((item) =>
-          item.id === clickedItem.id
-            ? { ...item, amount: item.amount + 1 }
-            : item
-        );
-      }
-      return [...previousItems, { ...clickedItem, amount: 1 }];
-    });
-  };
-
-  const handleRemoveFromCart = (id: number) => {
-    setCartItems((previousItems) =>
-      previousItems.reduce((ack, item) => {
-        if (item.id === id) {
-          if (item.amount === 1) return ack;
-
-          return [...ack, { ...item, amount: item.amount - 1 }];
-        } else {
-          return [...ack, item];
-        }
-      }, [] as CartItemType[])
-    );
-  };
 
   const findItemWithId = (id: number) => {
     return cartItems.find((item) => item.id === id);
@@ -117,14 +81,10 @@ const App = () => {
           open={cartOpen}
           onClose={() => setCartOpen(false)}
         >
-          <Cart
-            cartItems={cartItems}
-            addToCart={handleAddToCart}
-            removeFromCart={handleRemoveFromCart}
-          />
+          <Cart cartItems={cartItems} />
         </Drawer>
         <Button onClick={() => setCartOpen(true)}>
-          <Badge badgeContent={getTotalItems(cartItems)} color="error">
+          <Badge badgeContent={getTotalItems()} color="error">
             <AddShoppingCartIcon />
           </Badge>
         </Button>
@@ -138,11 +98,7 @@ const App = () => {
 
             return (
               <Grid item key={item.id} xs={12} sm={4}>
-                <Item
-                  quantity={productItem?.amount}
-                  item={item}
-                  handleAddToCart={handleAddToCart}
-                />
+                <Item quantity={productItem?.amount} item={item} />
               </Grid>
             );
           })}

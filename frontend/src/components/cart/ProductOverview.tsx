@@ -1,14 +1,22 @@
-import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { QueryFunctionContext, QueryKey, useQuery } from "react-query";
 import styles from "./ProductOverview.module.css"; // Ensure the CSS module is updated as per the new styles
 import type { CartItemType } from "../../types";
 import { fetchProduct } from "../../services/productService";
+import "../../App.css";
+import { useCart } from "../../context/CartContext";
 
 const ProductOverview = () => {
+  const { addToCart } = useCart();
+  const navigate = useNavigate();
+
   const { id } = useParams<string>();
-  const colors = ["blue", "green", "red"];
-  const [selectedColor, setSelectedColor] = useState(colors[0]);
+
+  const handleAddToCart = (product: CartItemType) => {
+    addToCart(product);
+    navigate("/");
+  };
 
   const fetchProductById = async ({
     queryKey,
@@ -32,39 +40,29 @@ const ProductOverview = () => {
     );
   if (!product) return <div className={styles.noProduct}>No product found</div>;
 
-  const handleColorSelect = (color: typeof selectedColor) => {
-    setSelectedColor(color);
-  };
   return (
-    <div className={styles.container}>
-      <div className={styles.image}>
-        <img
-          src={product.imageUrl}
-          alt={product.name}
-          className={styles.productImage}
-        />
-      </div>
-      <div className={styles.details}>
-        <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
-          <h1 className={styles.title}>{product.name}</h1>
-          <h2 className={styles.price}>€{product.price}</h2>
+    <section className="app">
+      <div className="details">
+        <div className="large-img-wrapper">
+          <img src={product.imageUrl} alt="largeImg" className="large-img" />
         </div>
-        <div className={styles.colors}>
-          Colors:
-          {colors.map((color, index) => (
-            <button
-              key={index}
-              className={styles.colorSwatch}
-              style={{ backgroundColor: color }}
-              onClick={() => handleColorSelect(color)}
-              aria-label={`Select ${color} color`}
-            />
-          ))}
+
+        <div className="box">
+          <div className="row">
+            <h2>{product.name}</h2>
+            <span>{product.price} $</span>
+          </div>
+          <p>{product.description}</p>
+          <p>In stock: {product.stock}</p>
+          <button
+            className="add-to-cart"
+            onClick={() => handleAddToCart(product)}
+          >
+            Add to cart
+          </button>
         </div>
-        <p className={styles.description}>{product.description}</p>
-        <button className={styles.addButton}>Add to Basket</button>
       </div>
-    </div>
+    </section>
   );
 };
 

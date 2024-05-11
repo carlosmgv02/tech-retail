@@ -5,15 +5,16 @@ import styles from "./Item.module.css"; // Import the CSS module
 // Types
 import { CartItemType } from "../../types";
 import { useNavigate } from "react-router-dom";
+import { useCart } from "../../context/CartContext";
 
 type Props = {
   quantity: number | undefined;
   item: CartItemType;
-  handleAddToCart: (clickedItem: CartItemType) => void;
 };
 
-const Item: React.FC<Props> = ({ quantity, item, handleAddToCart }) => {
+const Item: React.FC<Props> = ({ quantity, item }) => {
   const navigate = useNavigate();
+  const { addToCart } = useCart();
 
   const handleViewMore = () => {
     navigate(`/item/${item.id}`);
@@ -32,7 +33,7 @@ const Item: React.FC<Props> = ({ quantity, item, handleAddToCart }) => {
         className={styles.button}
         onClick={(e) => {
           e.stopPropagation();
-          handleAddToCart(item);
+          addToCart(item);
         }}
         disabled={item.stock <= quantity!}
       >
